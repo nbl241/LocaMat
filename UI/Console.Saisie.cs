@@ -5,6 +5,7 @@ namespace LocaMat.UI
     public static class ConsoleSaisie
     {
         private const string MessagePourValeurObligatoire = "Valeur obligatoire. Veuillez recommencer: ";
+
         private const string MessagePourValeurInvalide = "Valeur invalide. Veuillez recommencer: ";
 
         public static string SaisirChaine(string libelle, bool autoriserAucuneValeur)

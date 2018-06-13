@@ -53,18 +53,24 @@ namespace LocaMat.UI
         {
             ConsoleHelper.AfficherEntete("Nouveau produit");
 
-            var produit = new Produit
+            var dal = new BaseDonnees();
             {
-                Nom = ConsoleSaisie.SaisirChaine("Nom : ", false),
-                Description = ConsoleSaisie.SaisirChaine("Description : ", false),
-                IdCategorie = ConsoleSaisie.SaisirEntierObligatoire("IdCategorie : "),
-                PrixJourHT = ConsoleSaisie.SaisirDecimalObligatoire("PrixJourHT : ")
-            };
+                var produit = new Produit();
 
-            var bd = new BaseDonnees();
-            {
-                bd.Produits.Add(produit);
-                bd.SaveChanges();
+                produit.Nom = ConsoleSaisie.SaisirChaine("Nom du produit : ", false);
+                produit.Description = ConsoleSaisie.SaisirChaine("Description : ", false);
+                produit.IdCategorie = ConsoleSaisie.SaisirEntierObligatoire("IdCategorie : ");
+                produit.PrixJourHT = ConsoleSaisie.SaisirDecimalObligatoire("PrixJourHT : ");
+
+                var categorie = dal.CategoriesProduits.SingleOrDefault(x => x.Id == produit.IdCategorie);
+                if (categorie == null)
+                {
+                    ConsoleHelper.AfficherMessageErreur("Categorie invalide. Retour au menu");
+                    return;
+                }
+
+                dal.Produits.Add(produit);
+                dal.SaveChanges();
             }
         }
 

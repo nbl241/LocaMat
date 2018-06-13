@@ -63,38 +63,58 @@ namespace LocaMat
         {
             ConsoleHelper.AfficherEntete("Nouvelle location");
 
-
-            var location = new Location();
-
-            Application.ModuleGestionProduits.AfficherProduits();
-            location.IdProduit = ConsoleSaisie.SaisirEntierObligatoire("IdProduit : ");
-            bool estSaisieValide = false;
-            do
+            var dal = new BaseDonnees();
             {
-                var saisie = Console.ReadLine();
-                string IdProduit = null;
-                if (saisie != IdProduit)
+                var location = new Location();
+
+                Application.ModuleGestionProduits.AfficherProduits();
+                location.IdProduit = ConsoleSaisie.SaisirEntierObligatoire("IdProduit : ");
+                var produit = dal.Produits.SingleOrDefault(x => x.Id == location.IdProduit);
+                if(produit ==null)
                 {
-                    ConsoleHelper.AfficherMessageErreur(MessagePourValeurInvalide);
+                    ConsoleHelper.AfficherMessageErreur("Produit inexistant. Retour au menu");
+                    return;
                 }
-            }while (!estSaisieValide);
 
-            Application.ModuleGestionAgences.AfficherAgences();
-            location.IdAgence = ConsoleSaisie.SaisirEntierObligatoire("IdAgence : ");
+                Application.ModuleGestionAgences.AfficherAgences();
+                location.IdAgence = ConsoleSaisie.SaisirEntierObligatoire("IdAgence : ");
+                var agence = dal.Agences.SingleOrDefault(x => x.Id == location.IdAgence);
+                if (agence == null)
+                {
+                    ConsoleHelper.AfficherMessageErreur("Agence inexistante. Retour au menu");
+                    return;
+                }
 
-            Application.ModuleGestionClients.AfficherClients();
-            location.IdClient = ConsoleSaisie.SaisirEntierObligatoire("IdClient : ");
+                Application.ModuleGestionClients.AfficherClients();
+                location.IdClient = ConsoleSaisie.SaisirEntierObligatoire("IdClient : ");
+                var client = dal.Clients.SingleOrDefault(x => x.Id == location.IdClient);
+                if (client == null)
+                {
+                    ConsoleHelper.AfficherMessageErreur("Produit inexistant. Retour au menu");
+                    return;
+                }
 
-            location.DateDebut = ConsoleSaisie.SaisirDateObligatoire("DateDebut : ");
+                location.DateDebut = ConsoleSaisie.SaisirDateObligatoire("DateDebut : ");
+                if (location.DateDebut < DateTime.Today)
+                {
+                    ConsoleHelper.AfficherMessageErreur("Date invalide. Retour au menu");
+                    return;
+                }
 
-            location.DateFin = ConsoleSaisie.SaisirDateObligatoire("DateFin : ");
+                location.DateFin = ConsoleSaisie.SaisirDateObligatoire("DateFin : ");
+                int result = DateTime.Compare(location.DateDebut, location.DateFin);
+                if (location.DateFin < location.DateDebut)
+                {
+                    ConsoleHelper.AfficherMessageErreur("Date invalide. Retour au menu");
+                    return;
+                }
 
-            location.Quantite = ConsoleSaisie.SaisirEntierObligatoire("Quantite : ");
+                location.Quantite = ConsoleSaisie.SaisirEntierObligatoire("Quantite : ");
 
-            var bd = new BaseDonnees();
-            {
-                bd.Locations.Add(location);
-                bd.SaveChanges();
+                int result = DateTime.Compare(location.DateDebut, location.DateFin);
+
+                dal.Locations.Add(location);
+                dal.SaveChanges();
             }
         }
 
